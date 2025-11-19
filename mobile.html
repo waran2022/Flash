@@ -7,138 +7,258 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#2d3436">
+    <meta name="theme-color" content="#ffffff">
 
     <title>Maths App</title>
     <style>
-        /* --- CSS STYLES --- */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #2d3436;
-            display: flex;
-            justify-content: center;
-            align-items: center; 
-            /* DVH = Dynamic Viewport Height (Fixes mobile address bar jumpiness) */
-            min-height: 100dvh; 
-            margin: 0;
-            color: #2d3436;
-            overscroll-behavior: none; 
+        /* --- CSS VARIABLES --- */
+        :root {
+            --primary: #0984e3;
+            --primary-hover: #0069d9;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --bg-color: #ffffff; 
+            --success: #00b894;
+            --fail: #d63031;
         }
 
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            height: 100vh;
+            height: 100dvh; 
+            width: 100vw;
+            color: var(--text-main);
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- MAIN CONTAINER (FULL SCREEN) --- */
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 20px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            width: 90%; 
-            max-width: 400px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             position: relative;
         }
 
-        /* Full Screen Hint Text */
-        .fs-hint {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 0.7rem;
-            color: #aaa;
-            background: #eee;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
+        /* --- SETTINGS SCREEN (Centered Floating Box) --- */
+        #settings-screen {
+            width: 90%;
+            max-width: 500px; 
         }
 
-        h2 { margin: 5px 0 15px 0; font-size: 1.4rem; }
+        h2 { 
+            margin: 0 0 30px 0; 
+            font-size: clamp(2rem, 5vw, 3rem); 
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
 
-        /* Settings Box */
         .settings-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            text-align: left;
+            padding: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .input-group {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        .input-group label { 
+            font-size: clamp(1.2rem, 3vw, 1.5rem); 
+            font-weight: 600; 
+            color: var(--text-muted); 
+        }
+
+        select, input[type="number"], input[type="text"], input[type="email"] {
+            padding: 10px;
+            border: none;
+            background: #f1f2f6;
+            border-radius: 12px;
+            text-align: center;
+            width: 120px;
+            font-size: 1.3rem; 
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        select:focus, input:focus { outline: 2px solid var(--primary); background: #fff; }
+
+        /* --- Input Overrides for Name/Email Field --- */
+        #inp-name, #inp-email {
+            width: 100% !important; 
+            text-align: left !important;
+            padding-left: 20px !important;
+            color: var(--text-main) !important;
+        }
+
+        /* --- GAME SCREEN (THE BIG NUMBERS) --- */
+        #game-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
-        .input-group label { font-size: 0.9rem; font-weight: 600; color: #636e72; }
-
-        select, input {
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            text-align: center;
-            width: 80px; /* Fixed width for alignment */
-            font-size: 1rem; 
-            background: white;
-        }
-
-        /* NUMBER DISPLAY */
         #display-area {
-            height: 150px;
+            flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 10px 0;
-            user-select: none; 
+            width: 100%;
         }
 
         #number-text {
-            font-size: 5rem; 
-            font-weight: 800;
-            color: #2d3436;
+            font-size: clamp(6rem, 40vw, 35rem); 
+            font-weight: 900;
             line-height: 1;
+            transition: color 0.1s;
         }
 
-        /* Responsive Text Sizes */
-        @media (max-width: 480px) {
-            #number-text { font-size: 4rem; } 
-            .text-tiny { font-size: 2.5rem !important; }
+        .text-tiny #number-text { font-size: clamp(4rem, 28vw, 25rem) !important; }
+
+        #status-text {
+            position: absolute;
+            top: 40px;
+            font-size: 1.5rem;
+            color: #b2bec3;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* Buttons */
+        /* --- ANSWER & RESULT SCREENS --- */
+        #answer-screen, #result-screen {
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #user-guess {
+            display: block;
+            width: 100%;
+            border: none;
+            border-bottom: 4px solid #dfe6e9;
+            font-size: clamp(3rem, 10vw, 6rem); 
+            text-align: center;
+            margin: 40px 0;
+            font-weight: bold;
+            background: transparent;
+            color: var(--text-main);
+            border-radius: 0;
+        }
+        #user-guess:focus { outline: none; border-color: var(--primary); }
+
+        /* --- BUTTONS --- */
         .action-btn {
             width: 100%;
-            padding: 16px; 
-            font-size: 1.1rem;
+            padding: 20px;
+            font-size: 1.5rem;
             font-weight: bold;
-            background-color: #0984e3;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
-            touch-action: manipulation; 
+            border-radius: 16px;
             cursor: pointer;
-            margin-bottom: 5px;
+            box-shadow: 0 10px 20px rgba(9, 132, 227, 0.3);
+            transition: transform 0.1s;
+            margin-bottom: 10px;
         }
         
-        .action-btn:active { transform: scale(0.96); background-color: #0069d9; }
-        .secondary { background-color: #b2bec3; color: #2d3436; margin-top: 10px; }
-
-        /* Input Field */
-        #user-guess {
-            padding: 15px;
-            font-size: 1.5rem;
-            width: 100%; 
-            box-sizing: border-box; 
-            text-align: center;
-            border: 3px solid #dfe6e9;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            outline: none;
+        .action-btn:active { transform: scale(0.98); }
+        .primary-replay { 
+            background-color: var(--success); 
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+            margin-top: 15px;
         }
-        #user-guess:focus { border-color: #0984e3; }
+
+        .secondary { background-color: #dfe6e9; color: var(--text-main); box-shadow: none; }
+        .tertiary { background-color: #a29bfe; margin-top: 10px; }
+        .history-btn { background-color: #f39c12; margin-top: 20px; }
 
         .hidden { display: none !important; }
-        #message { margin-top: 15px; font-size: 1.1rem; }
+
+        /* --- HISTORY SCREEN STYLES --- */
+        #history-screen {
+            width: 90%;
+            max-width: 800px;
+            height: 90dvh;
+            overflow-y: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+        }
+
+        #history-screen h3 {
+            margin-top: 30px;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .history-table th, .history-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        .history-table th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+            color: var(--text-main);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .history-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 10px;
+        }
+
+        .history-summary p { margin: 5px 0; }
+        .history-summary .score-correct { color: var(--success); font-weight: bold; }
+        .history-summary .score-fail { color: var(--fail); font-weight: bold; }
+
+        /* Full Screen Hint Button */
+        .fs-hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 100;
+        }
     </style>
 </head>
-<body>
+<body onload="loadResults()">
 
     <div class="container">
         <div id="android-fs-btn" class="fs-hint" onclick="attemptFullScreen()" style="display:none;">⛶ Full Screen</div>
@@ -146,6 +266,14 @@
         <div id="settings-screen">
             <h2>🧠 Memory Maths</h2>
             <div class="settings-box">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="inp-name" value="" placeholder="Enter your name">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="inp-email" value="" placeholder="student@example.com">
+                </div>
                 <div class="input-group">
                     <label>Difficulty</label>
                     <select id="inp-digits">
@@ -164,174 +292,328 @@
                     <input type="number" inputmode="decimal" id="inp-speed" value="1.5" step="0.1">
                 </div>
             </div>
-            <button class="action-btn" onclick="initGame()">Start</button>
-        </div>
+            <button class="action-btn" onclick="initGame()">START</button>
+            <button class="action-btn history-btn" onclick="showHistoryScreen()">View History</button> </div>
 
         <div id="game-screen" class="hidden">
-            <p id="status-text" style="color:#b2bec3; font-weight:600; margin:0;">Get Ready...</p>
+            <p id="status-text">Get Ready</p>
             <div id="display-area">
-                <span id="number-text">3</span>
+                <span id="number-text">GO</span>
             </div>
         </div>
 
         <div id="answer-screen" class="hidden">
-            <h2>Total Sum?</h2>
+            <h2>What was the Sum?</h2>
             <input type="tel" inputmode="numeric" id="user-guess" placeholder="?" autocomplete="off">
-            <button class="action-btn" onclick="checkResult()">Check Answer</button>
+            <button class="action-btn" onclick="checkResult()">CHECK</button>
         </div>
 
         <div id="result-screen" class="hidden">
             <div id="message"></div>
-            <button class="action-btn secondary" onclick="resetToSettings()">Play Again</button>
+            <button class="action-btn primary-replay" onclick="replayGame()">Play Again</button>
+            <button class="action-btn secondary" onclick="resetToSettings()">Change Settings</button>
+        </div>
+
+        <div id="history-screen" class="hidden">
+            <h2>📊 Student Results History</h2>
+            <div id="history-content"></div>
+            <button class="action-btn secondary" onclick="resetToSettings()">Back to Settings</button>
         </div>
 
     </div>
 
     <script>
-        // --- DETECT ANDROID VS IOS ---
+        // --- ANDROID FULL SCREEN CHECK ---
         const isAndroid = /Android/i.test(navigator.userAgent);
-        if(isAndroid) {
-            document.getElementById('android-fs-btn').style.display = 'block';
-        }
+        if(isAndroid) document.getElementById('android-fs-btn').style.display = 'block';
 
-        // --- FULL SCREEN LOGIC (ANDROID) ---
         function attemptFullScreen() {
-            const doc = window.document;
-            const docEl = doc.documentElement;
-            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-            if(requestFullScreen) {
-                requestFullScreen.call(docEl).catch(err => {
-                    alert("Your phone does not support script-based full screen. Use 'Add to Home Screen'.");
-                });
-            }
+            const doc = window.document.documentElement;
+            const req = doc.requestFullscreen || doc.mozRequestFullScreen || doc.webkitRequestFullScreen || doc.msRequestFullscreen;
+            if(req) req.call(doc).catch(e => console.log(e));
         }
 
-        // --- GAME VARIABLES ---
+        // --- GLOBAL LOGIC ---
         let totalSum = 0;
         let countLimit = 0;
         let speedMs = 1000;
         let digitLimit = 1;
-        let numbersDisplayCount = 0;
+        let currentCount = 0;
         let gameInterval = null;
+        let playerName = "Student";
+        let playerEmail = "";
+        
+        // Array to store all game attempts
+        let resultsHistory = []; 
 
-        // --- DOM ELEMENTS ---
-        const screens = {
-            settings: document.getElementById('settings-screen'),
-            game: document.getElementById('game-screen'),
-            answer: document.getElementById('answer-screen'),
-            result: document.getElementById('result-screen')
+        const LOCAL_STORAGE_KEY = 'mathAppResults';
+
+        const els = {
+            screens: {
+                settings: document.getElementById('settings-screen'),
+                game: document.getElementById('game-screen'),
+                answer: document.getElementById('answer-screen'),
+                result: document.getElementById('result-screen'),
+                history: document.getElementById('history-screen') // NEW
+            },
+            inputs: {
+                name: document.getElementById('inp-name'),
+                email: document.getElementById('inp-email'),
+                digits: document.getElementById('inp-digits'),
+                count: document.getElementById('inp-count'),
+                speed: document.getElementById('inp-speed'),
+                guess: document.getElementById('user-guess')
+            },
+            disp: {
+                num: document.getElementById('number-text'),
+                status: document.getElementById('status-text'),
+                msg: document.getElementById('message'),
+                area: document.getElementById('display-area'),
+                historyContent: document.getElementById('history-content') // NEW
+            }
         };
-        const inputs = {
-            digits: document.getElementById('inp-digits'),
-            count: document.getElementById('inp-count'),
-            speed: document.getElementById('inp-speed'),
-            guess: document.getElementById('user-guess')
-        };
-        const display = {
-            number: document.getElementById('number-text'),
-            status: document.getElementById('status-text'),
-            message: document.getElementById('message')
-        };
+
+        // --- LOCAL STORAGE FUNCTIONS ---
+
+        function loadResults() {
+            try {
+                const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (data) {
+                    resultsHistory = JSON.parse(data);
+                } else {
+                    resultsHistory = [];
+                }
+            } catch (e) {
+                console.error("Could not load results from LocalStorage:", e);
+                resultsHistory = [];
+            }
+        }
+
+        function saveResults() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(resultsHistory));
+            } catch (e) {
+                console.error("Could not save results to LocalStorage:", e);
+            }
+        }
+        
+        // --- SCREEN CONTROL ---
+
+        function switchScreen(name) {
+            Object.values(els.screens).forEach(el => el.classList.add('hidden'));
+            els.screens[name].classList.remove('hidden');
+        }
 
         function initGame() {
-            digitLimit = parseInt(inputs.digits.value);
-            countLimit = parseInt(inputs.count.value);
-            speedMs = parseFloat(inputs.speed.value) * 1000;
+            // Capture Settings
+            playerName = els.inputs.name.value.trim() || "Student";
+            playerEmail = els.inputs.email.value.trim();
+            digitLimit = parseInt(els.inputs.digits.value);
+            countLimit = parseInt(els.inputs.count.value);
+            speedMs = parseFloat(els.inputs.speed.value) * 1000;
 
-            if(isNaN(countLimit) || countLimit < 1) { alert("Invalid count"); return; }
-            if(isNaN(speedMs) || speedMs < 100) { alert("Too fast"); return; }
+            if(playerName === "") return alert("Please enter your name.");
+            if(playerEmail === "") return alert("Please enter your email address.");
+            if(isNaN(countLimit) || countLimit < 1) return alert("Check Count");
+            if(isNaN(speedMs) || speedMs < 100) return alert("Check Speed");
 
             totalSum = 0;
-            numbersDisplayCount = 0;
-            inputs.guess.value = '';
-            display.number.className = ''; 
+            currentCount = 0;
+            els.inputs.guess.value = '';
+            els.disp.area.className = '';
             
-            // Request full screen on Start click (Android only)
             if(isAndroid) attemptFullScreen();
 
             switchScreen('game');
             runCountdown();
         }
 
-        function switchScreen(name) {
-            Object.values(screens).forEach(el => el.classList.add('hidden'));
-            screens[name].classList.remove('hidden');
-        }
-
         function runCountdown() {
-            let count = 3;
-            display.status.innerText = "Starting in...";
-            display.number.innerText = count;
-            display.number.style.color = "#2d3436";
-
-            let timer = setInterval(() => {
-                count--;
-                if(count > 0) {
-                    display.number.innerText = count;
-                } else {
-                    clearInterval(timer);
-                    display.number.innerText = "GO";
-                    display.number.style.color = "#00b894";
-                    setTimeout(() => {
-                        startGameLoop();
-                    }, 1000);
-                }
-            }, 1000);
+            els.disp.status.innerText = "STARTING";
+            els.disp.num.innerText = "GO";
+            els.disp.num.style.color = "#00b894";
+            
+            setTimeout(startGameLoop, 1000);
         }
 
         function startGameLoop() {
-            if(digitLimit >= 4) display.number.classList.add('text-tiny');
-            display.status.innerText = `1 / ${countLimit}`;
-            showRandomNumber();
+            if(digitLimit >= 4) els.disp.area.classList.add('text-tiny');
+            els.disp.status.innerText = `1 / ${countLimit}`;
+            showNext();
 
             gameInterval = setInterval(() => {
-                if(numbersDisplayCount >= countLimit) {
+                if(currentCount >= countLimit) {
                     clearInterval(gameInterval);
-                    endGameLoop();
+                    setTimeout(() => {
+                        switchScreen('answer');
+                        setTimeout(() => els.inputs.guess.focus(), 100);
+                    }, speedMs);
                 } else {
-                    showRandomNumber();
+                    showNext();
                 }
             }, speedMs);
         }
 
-        function showRandomNumber() {
-            if(numbersDisplayCount >= countLimit) return;
-
+        function showNext() {
+            if(currentCount >= countLimit) return;
+            
             let min = Math.pow(10, digitLimit - 1);
             let max = Math.pow(10, digitLimit) - 1;
             const rand = Math.floor(Math.random() * (max - min + 1)) + min;
             
             totalSum += rand;
-            numbersDisplayCount++;
+            currentCount++;
             
-            display.status.innerText = `${numbersDisplayCount} / ${countLimit}`;
-            display.number.innerText = rand;
+            els.disp.status.innerText = `${currentCount} / ${countLimit}`;
+            els.disp.num.innerText = rand;
             
-            const colors = ['#2d3436', '#0984e3', '#d63031', '#6c5ce7', '#e84393'];
-            display.number.style.color = colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        function endGameLoop() {
-            setTimeout(() => {
-                switchScreen('answer');
-                setTimeout(() => inputs.guess.focus(), 100);
-            }, speedMs);
+            const colors = ['#2d3436', '#0984e3', '#d63031', '#6c5ce7', '#00b894'];
+            els.disp.num.style.color = colors[Math.floor(Math.random() * colors.length)];
         }
 
         function checkResult() {
-            const val = parseInt(inputs.guess.value);
-            if(isNaN(val)) return;
+            const userGuess = parseInt(els.inputs.guess.value);
+            const isCorrect = userGuess === totalSum;
+            
+            if(isNaN(userGuess)) return;
 
+            // 1. CAPTURE & SAVE RESULT
+            resultsHistory.push({
+                name: playerName,
+                email: playerEmail,
+                difficulty: `${digitLimit} Digits (${countLimit} numbers)`,
+                count: countLimit,
+                speed: parseFloat(els.inputs.speed.value),
+                userGuess: userGuess,
+                correctSum: totalSum,
+                isCorrect: isCorrect,
+                timestamp: new Date().toISOString(), // ISO format for easy sorting/parsing
+                displayTime: new Date().toLocaleString()
+            });
+            saveResults();
+
+            // 2. Display Message
             switchScreen('result');
-            if(val === totalSum) {
-                display.message.innerHTML = `<h2 style="color:#00b894">Correct! 🎉</h2><p>Sum: ${totalSum}</p>`;
+            
+            if(isCorrect) {
+                els.disp.msg.innerHTML = `<h2 style="color:var(--success); font-size: clamp(3rem, 8vw, 5rem);">Correct! 🎉</h2><p style="font-size:1.5rem">Well done, ${playerName}!</p>`;
             } else {
-                display.message.innerHTML = `<h2 style="color:#d63031">Wrong 😔</h2><p>Your answer: ${val}</p><p>Correct Sum: <b>${totalSum}</b></p>`;
+                els.disp.msg.innerHTML = `<h2 style="color:var(--fail); font-size: clamp(3rem, 8vw, 5rem);">Wrong 😔</h2><p style="font-size:1.5rem">You: ${userGuess} | Actual: <b>${totalSum}</b></p>`;
             }
+        }
+
+        function replayGame() {
+            initGame();
         }
 
         function resetToSettings() {
             switchScreen('settings');
+        }
+
+        // --- HISTORY DISPLAY FUNCTION ---
+
+        function showHistoryScreen() {
+            if (resultsHistory.length === 0) {
+                els.disp.historyContent.innerHTML = "<p>No results have been recorded yet.</p>";
+                switchScreen('history');
+                return;
+            }
+
+            // Group data by student name (and maybe email)
+            const groupedHistory = resultsHistory.reduce((acc, entry) => {
+                const key = `${entry.name} (${entry.email})`;
+                if (!acc[key]) {
+                    acc[key] = {
+                        totalCorrect: 0,
+                        totalIncorrect: 0,
+                        totalGames: 0,
+                        difficultyScores: {},
+                        attempts: []
+                    };
+                }
+                
+                // Track total scores
+                acc[key].totalGames++;
+                if (entry.isCorrect) {
+                    acc[key].totalCorrect++;
+                } else {
+                    acc[key].totalIncorrect++;
+                }
+                
+                // Track scores per difficulty
+                const diffKey = entry.difficulty;
+                if (!acc[key].difficultyScores[diffKey]) {
+                    acc[key].difficultyScores[diffKey] = { correct: 0, total: 0 };
+                }
+                acc[key].difficultyScores[diffKey].total++;
+                if (entry.isCorrect) {
+                    acc[key].difficultyScores[diffKey].correct++;
+                }
+
+                acc[key].attempts.push(entry);
+                return acc;
+            }, {});
+
+            let html = '';
+
+            for (const studentKey in groupedHistory) {
+                const data = groupedHistory[studentKey];
+                
+                // Summary Block
+                html += `
+                    <h3>${studentKey}'s Summary</h3>
+                    <div class="history-summary">
+                        <p>Total Games Played: <b>${data.totalGames}</b></p>
+                        <p>Total Correct Answers: <span class="score-correct">${data.totalCorrect}</span></p>
+                        <p>Total Failed Answers: <span class="score-fail">${data.totalIncorrect}</span></p>
+                        
+                        <p style="margin-top: 10px; font-weight: 600;">Breakdown by Difficulty:</p>
+                        <ul style="list-style-type: none; padding: 0;">
+                `;
+
+                for (const diff in data.difficultyScores) {
+                    const score = data.difficultyScores[diff];
+                    html += `
+                        <li style="margin-left: 15px;">${diff}: <span style="color: ${score.correct > 0 ? 'var(--success)' : 'var(--fail)'};">${score.correct} / ${score.total}</span> Correct</li>
+                    `;
+                }
+                html += `</ul></div>`;
+
+                // Detailed Table
+                html += `
+                    <h3>Detailed Attempts</h3>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Difficulty</th>
+                                <th>Correct?</th>
+                                <th>Actual Sum</th>
+                                <th>User Guess</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                // Display attempts (newest first)
+                data.attempts.slice().reverse().forEach(entry => {
+                    const status = entry.isCorrect ? `<span style="color:var(--success);">✅ YES</span>` : `<span style="color:var(--fail);">❌ NO</span>`;
+                    html += `
+                        <tr>
+                            <td>${entry.displayTime}</td>
+                            <td>${entry.difficulty.split('(')[0]}</td>
+                            <td>${status}</td>
+                            <td>${entry.correctSum}</td>
+                            <td>${entry.userGuess}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+            }
+
+            els.disp.historyContent.innerHTML = html;
+            switchScreen('history');
         }
     </script>
 </body>
