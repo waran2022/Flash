@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2d3436">
+
+    <title>Maths App</title>
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #2d3436;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            /* DVH = Dynamic Viewport Height (Fixes mobile address bar jumpiness) */
+            min-height: 100dvh; 
+            margin: 0;
+            color: #2d3436;
+            overscroll-behavior: none; 
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            width: 90%; 
+            max-width: 400px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* Full Screen Hint Text */
+        .fs-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #aaa;
+            background: #eee;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        h2 { margin: 5px 0 15px 0; font-size: 1.4rem; }
+
+        /* Settings Box */
+        .settings-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .input-group label { font-size: 0.9rem; font-weight: 600; color: #636e72; }
+
+        select, input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+            width: 80px; /* Fixed width for alignment */
+            font-size: 1rem; 
+            background: white;
+        }
+
+        /* NUMBER DISPLAY */
+        #display-area {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            user-select: none; 
+        }
+
+        #number-text {
+            font-size: 5rem; 
+            font-weight: 800;
+            color: #2d3436;
+            line-height: 1;
+        }
+
+        /* Responsive Text Sizes */
+        @media (max-width: 480px) {
+            #number-text { font-size: 4rem; } 
+            .text-tiny { font-size: 2.5rem !important; }
+        }
+
+        /* Buttons */
+        .action-btn {
+            width: 100%;
+            padding: 16px; 
+            font-size: 1.1rem;
+            font-weight: bold;
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            touch-action: manipulation; 
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        
+        .action-btn:active { transform: scale(0.96); background-color: #0069d9; }
+        .secondary { background-color: #b2bec3; color: #2d3436; margin-top: 10px; }
+
+        /* Input Field */
+        #user-guess {
+            padding: 15px;
+            font-size: 1.5rem;
+            width: 100%; 
+            box-sizing: border-box; 
+            text-align: center;
+            border: 3px solid #dfe6e9;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        #user-guess:focus { border-color: #0984e3; }
+
+        .hidden { display: none !important; }
+        #message { margin-top: 15px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="android-fs-btn" class="fs-hint" onclick="attemptFullScreen()" style="display:none;">⛶ Full Screen</div>
+
+        <div id="settings-screen">
+            <h2>🧠 Memory Maths</h2>
+            <div class="settings-box">
+                <div class="input-group">
+                    <label>Difficulty</label>
+                    <select id="inp-digits">
+                        <option value="1">1 Digit</option>
+                        <option value="2">2 Digits</option>
+                        <option value="3">3 Digits</option>
+                        <option value="4">4 Digits</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Count</label>
+                    <input type="number" inputmode="numeric" id="inp-count" value="5">
+                </div>
+                <div class="input-group">
+                    <label>Speed (s)</label>
+                    <input type="number" inputmode="decimal" id="inp-speed" value="1.5" step="0.1">
+                </div>
+            </div>
+            <button class="action-btn" onclick="initGame()">Start</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <p id="status-text" style="color:#b2bec3; font-weight:600; margin:0;">Get Ready...</p>
+            <div id="display-area">
+                <span id="number-text">3</span>
+            </div>
+        </div>
+
+        <div id="answer-screen" class="hidden">
+            <h2>Total Sum?</h2>
+            <input type="tel" inputmode="numeric" id="user-guess" placeholder="?" autocomplete="off">
+            <button class="action-btn" onclick="checkResult()">Check Answer</button>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <div id="message"></div>
+            <button class="action-btn secondary" onclick="resetToSettings()">Play Again</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DETECT ANDROID VS IOS ---
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        if(isAndroid) {
+            document.getElementById('android-fs-btn').style.display = 'block';
+        }
+
+        // --- FULL SCREEN LOGIC (ANDROID) ---
+        function attemptFullScreen() {
+            const doc = window.document;
+            const docEl = doc.documentElement;
+            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            if(requestFullScreen) {
+                requestFullScreen.call(docEl).catch(err => {
+                    alert("Your phone does not support script-based full screen. Use 'Add to Home Screen'.");
+                });
+            }
+        }
+
+        // --- GAME VARIABLES ---
+        let totalSum = 0;
+        let countLimit = 0;
+        let speedMs = 1000;
+        let digitLimit = 1;
+        let numbersDisplayCount = 0;
+        let gameInterval = null;
+
+        // --- DOM ELEMENTS ---
+        const screens = {
+            settings: document.getElementById('settings-screen'),
+            game: document.getElementById('game-screen'),
+            answer: document.getElementById('answer-screen'),
+            result: document.getElementById('result-screen')
+        };
+        const inputs = {
+            digits: document.getElementById('inp-digits'),
+            count: document.getElementById('inp-count'),
+            speed: document.getElementById('inp-speed'),
+            guess: document.getElementById('user-guess')
+        };
+        const display = {
+            number: document.getElementById('number-text'),
+            status: document.getElementById('status-text'),
+            message: document.getElementById('message')
+        };
+
+        function initGame() {
+            digitLimit = parseInt(inputs.digits.value);
+            countLimit = parseInt(inputs.count.value);
+            speedMs = parseFloat(inputs.speed.value) * 1000;
+
+            if(isNaN(countLimit) || countLimit < 1) { alert("Invalid count"); return; }
+            if(isNaN(speedMs) || speedMs < 100) { alert("Too fast"); return; }
+
+            totalSum = 0;
+            numbersDisplayCount = 0;
+            inputs.guess.value = '';
+            display.number.className = ''; 
+            
+            // Request full screen on Start click (Android only)
+            if(isAndroid) attemptFullScreen();
+
+            switchScreen('game');
+            runCountdown();
+        }
+
+        function switchScreen(name) {
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
+        }
+
+        function runCountdown() {
+            let count = 3;
+            display.status.innerText = "Starting in...";
+            display.number.innerText = count;
+            display.number.style.color = "#2d3436";
+
+            let timer = setInterval(() => {
+                count--;
+                if(count > 0) {
+                    display.number.innerText = count;
+                } else {
+                    clearInterval(timer);
+                    display.number.innerText = "GO";
+                    display.number.style.color = "#00b894";
+                    setTimeout(() => {
+                        startGameLoop();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function startGameLoop() {
+            if(digitLimit >= 4) display.number.classList.add('text-tiny');
+            display.status.innerText = `1 / ${countLimit}`;
+            showRandomNumber();
+
+            gameInterval = setInterval(() => {
+                if(numbersDisplayCount >= countLimit) {
+                    clearInterval(gameInterval);
+                    endGameLoop();
+                } else {
+                    showRandomNumber();
+                }
+            }, speedMs);
+        }
+
+        function showRandomNumber() {
+            if(numbersDisplayCount >= countLimit) return;
+
+            let min = Math.pow(10, digitLimit - 1);
+            let max = Math.pow(10, digitLimit) - 1;
+            const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            totalSum += rand;
+            numbersDisplayCount++;
+            
+            display.status.innerText = `${numbersDisplayCount} / ${countLimit}`;
+            display.number.innerText = rand;
+            
+            const colors = ['#2d3436', '#0984e3', '#d63031', '#6c5ce7', '#e84393'];
+            display.number.style.color = colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function endGameLoop() {
+            setTimeout(() => {
+                switchScreen('answer');
+                setTimeout(() => inputs.guess.focus(), 100);
+            }, speedMs);
+        }
+
+        function checkResult() {
+            const val = parseInt(inputs.guess.value);
+            if(isNaN(val)) return;
+
+            switchScreen('result');
+            if(val === totalSum) {
+                display.message.innerHTML = `<h2 style="color:#00b894">Correct! 🎉</h2><p>Sum: ${totalSum}</p>`;
+            } else {
+                display.message.innerHTML = `<h2 style="color:#d63031">Wrong 😔</h2><p>Your answer: ${val}</p><p>Correct Sum: <b>${totalSum}</b></p>`;
+            }
+        }
+
+        function resetToSettings() {
+            switchScreen('settings');
+        }
+    </script>
+</body>
+</html>
