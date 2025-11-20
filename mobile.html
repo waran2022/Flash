@@ -46,40 +46,51 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            /* FIX: Use flex-start instead of center for stability, then add small margin to center the visible content */
+            justify-content: flex-start; 
             align-items: center;
             text-align: center;
             position: relative;
+            /* Add some top padding to ensure the top of the content is visible */
+            padding-top: 20px; 
+            padding-bottom: 20px;
         }
 
         /* --- SETTINGS SCREEN (Centered Floating Box) --- */
         #settings-screen {
             width: 90%;
             max-width: 500px; 
+            /* Allow vertical scrolling only on the settings screen content if it overflows */
+            overflow-y: auto; 
+            max-height: 100%; /* Important for internal scrolling */
         }
 
-        /* --- HEADING FONT SCALING (Fixed) --- */
+        /* --- FLUID HEADING --- */
         h2 { 
-            margin: 0 0 30px 0; 
-            font-size: clamp(3rem, 15vw, 5rem); 
+            margin: 0 0 15px 0; 
+            font-size: clamp(2rem, 10vw, 5rem); 
             font-weight: 800;
             letter-spacing: -1px;
+            /* Ensure the heading is visible above scrollable content */
+            flex-shrink: 0; 
         }
         /* ------------------------------------- */
 
         .settings-box {
+            /* FIX: Add a flexible top margin to push content down slightly after the heading */
+            margin-top: clamp(5px, 2vh, 15px); 
             padding: 10px;
             margin-bottom: 30px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: clamp(10px, 4vw, 20px); 
         }
 
         .input-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: clamp(5px, 2vw, 10px) 0; 
             border-bottom: 1px solid #f1f2f6;
         }
 
@@ -105,9 +116,9 @@
         
         select:focus, input:focus { outline: 2px solid var(--primary); background: #fff; }
 
-        /* --- GAME SETTINGS ALIGNMENT --- */
+        /* --- FLUID GAME SETTINGS ALIGNMENT --- */
         select, input[type="number"] {
-            width: 120px;
+            width: clamp(100px, 25vw, 120px); 
             text-align: center;
             flex-grow: 0; 
             flex-shrink: 0;
@@ -130,13 +141,12 @@
             padding: 5px 0;
         }
         .teacher-input label {
-            /* This is the text label (e.g., Name, Email) in the top section */
             font-size: 1.5rem; 
             margin-right: 5px;
             color: var(--text-main);
         }
         
-        /* NEW: Icon Container Styling for better visibility and branding */
+        /* Icon Container Styling for better visibility and branding */
         .icon-container {
             width: 35px;
             height: 35px;
@@ -146,30 +156,28 @@
             align-items: center;
             margin-right: 10px;
             flex-shrink: 0;
-            font-size: 1.2rem; /* Size of the icon symbol */
+            font-size: 1.2rem; 
         }
         
         .icon-mail { 
-            background-color: var(--gmail); /* Red background for Gmail */
+            background-color: var(--gmail); 
             color: white; 
         } 
         
         .icon-whatsapp { 
-            background-color: var(--whatsapp); /* Green background for WhatsApp */
+            background-color: var(--whatsapp); 
             color: white; 
         }
 
         /* Override the general label settings for the specific icons */
         .teacher-input .input-group label {
-            /* Target the main label of the teacher input group */
             font-weight: 600;
             color: var(--text-muted);
-            font-size: 1rem; /* Smaller font for text label */
+            font-size: 1rem; 
             min-width: unset;
         }
         
         .teacher-input .input-group {
-            /* Align the icon, label, and input */
             align-items: center;
         }
 
@@ -290,7 +298,8 @@
         #history-screen {
             width: 90%;
             max-width: 800px;
-            height: 90dvh;
+            /* Use a flexible height and allow scrolling */
+            height: 90vh;
             overflow-y: auto;
             background: #fff;
             padding: 20px;
@@ -357,11 +366,11 @@
                     <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Sharing Settings:</p>
                     <div class="teacher-input">
                         <div class="input-group">
-                            <div class="icon-container icon-mail" title="Teacher Email Address">✉️</div>
+                            <div class="icon-container icon-mail" title="Teacher Email Address" role="label">✉️</div>
                             <input type="email" id="inp-teacher-email" value="" placeholder="Teacher Email Address">
                         </div>
                         <div class="input-group">
-                            <div class="icon-container icon-whatsapp" title="Teacher WhatsApp Number">💬</div>
+                            <div class="icon-container icon-whatsapp" title="Teacher WhatsApp Number" role="label">💬</div>
                             <input type="tel" id="inp-teacher-whatsapp" value="" placeholder="+919876543210 (WhatsApp)">
                         </div>
                     </div>
