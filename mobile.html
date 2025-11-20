@@ -13,13 +13,15 @@
     <style>
         /* --- CSS VARIABLES --- */
         :root {
-            --primary: #0984e3;
+            --primary: #0984e3; /* Blue */
             --primary-hover: #0069d9;
             --text-main: #2d3436;
             --text-muted: #636e72;
             --bg-color: #ffffff; 
-            --success: #00b894;
-            --fail: #d63031;
+            --success: #00b894; /* Green for success/replay */
+            --fail: #d63031; /* Red for wrong */
+            --whatsapp: #25D366; /* WhatsApp Green */
+            --gmail: #D63031; /* Gmail Red */
         }
 
         * { box-sizing: border-box; }
@@ -56,12 +58,14 @@
             max-width: 500px; 
         }
 
+        /* --- HEADING FONT SCALING (Fixed) --- */
         h2 { 
             margin: 0 0 30px 0; 
-            font-size: clamp(2rem, 5vw, 3rem); 
+            font-size: clamp(3rem, 15vw, 5rem); 
             font-weight: 800;
             letter-spacing: -1px;
         }
+        /* ------------------------------------- */
 
         .settings-box {
             padding: 10px;
@@ -83,28 +87,90 @@
             font-size: clamp(1.2rem, 3vw, 1.5rem); 
             font-weight: 600; 
             color: var(--text-muted); 
+            flex-shrink: 0;
+            min-width: 30px; 
         }
-
-        select, input[type="number"], input[type="text"], input[type="email"] {
+        
+        /* --- GENERAL INPUT STYLES --- */
+        select, input[type="number"], input[type="text"], input[type="email"], input[type="tel"] {
             padding: 10px;
             border: none;
             background: #f1f2f6;
             border-radius: 12px;
-            text-align: center;
-            width: 120px;
             font-size: 1.3rem; 
             font-weight: bold;
             color: var(--primary);
+            margin-left: 10px;
         }
         
         select:focus, input:focus { outline: 2px solid var(--primary); background: #fff; }
 
-        /* --- Input Overrides for Name/Email Field --- */
-        #inp-name, #inp-email {
+        /* --- GAME SETTINGS ALIGNMENT --- */
+        select, input[type="number"] {
+            width: 120px;
+            text-align: center;
+            flex-grow: 0; 
+            flex-shrink: 0;
+        }
+
+        /* --- Input Overrides for Name/Email/Teacher Fields (Full Width) --- */
+        #inp-name, #inp-email, 
+        .teacher-input input[type="email"], 
+        .teacher-input input[type="tel"] {
             width: 100% !important; 
             text-align: left !important;
             padding-left: 20px !important;
             color: var(--text-main) !important;
+            flex-grow: 1; 
+        }
+        
+        /* Teacher Input Groups - Targeted Styles */
+        .teacher-input .input-group {
+            border: none;
+            padding: 5px 0;
+        }
+        .teacher-input label {
+            /* This is the text label (e.g., Name, Email) in the top section */
+            font-size: 1.5rem; 
+            margin-right: 5px;
+            color: var(--text-main);
+        }
+        
+        /* NEW: Icon Container Styling for better visibility and branding */
+        .icon-container {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+            font-size: 1.2rem; /* Size of the icon symbol */
+        }
+        
+        .icon-mail { 
+            background-color: var(--gmail); /* Red background for Gmail */
+            color: white; 
+        } 
+        
+        .icon-whatsapp { 
+            background-color: var(--whatsapp); /* Green background for WhatsApp */
+            color: white; 
+        }
+
+        /* Override the general label settings for the specific icons */
+        .teacher-input .input-group label {
+            /* Target the main label of the teacher input group */
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 1rem; /* Smaller font for text label */
+            min-width: unset;
+        }
+        
+        .teacher-input .input-group {
+            /* Align the icon, label, and input */
+            align-items: center;
         }
 
         /* --- GAME SCREEN (THE BIG NUMBERS) --- */
@@ -170,7 +236,7 @@
             padding: 20px;
             font-size: 1.5rem;
             font-weight: bold;
-            background-color: var(--primary);
+            background-color: var(--primary); 
             color: white;
             border: none;
             border-radius: 16px;
@@ -181,19 +247,46 @@
         }
         
         .action-btn:active { transform: scale(0.98); }
+
+        /* Replay button uses success color */
         .primary-replay { 
             background-color: var(--success); 
             box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
             margin-top: 15px;
         }
 
-        .secondary { background-color: #dfe6e9; color: var(--text-main); box-shadow: none; }
-        .tertiary { background-color: #a29bfe; margin-top: 10px; }
+        /* Secondary button restored */
+        .secondary { 
+            background-color: #dfe6e9; 
+            color: var(--text-main); 
+            box-shadow: none; 
+        }
+        
         .history-btn { background-color: #f39c12; margin-top: 20px; }
+        
+        /* New Share Link for Result Screen */
+        #share-link-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .share-link {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .share-link:hover { background-color: #f5f6fa; }
+        .share-link.whatsapp-color { color: var(--whatsapp); }
 
         .hidden { display: none !important; }
 
-        /* --- HISTORY SCREEN STYLES --- */
+        /* --- HISTORY SCREEN STYLES (Retained) --- */
         #history-screen {
             width: 90%;
             max-width: 800px;
@@ -204,46 +297,13 @@
             border-radius: 15px;
             text-align: left;
         }
-
-        #history-screen h3 {
-            margin-top: 30px;
-            border-bottom: 2px solid #f1f2f6;
-            padding-bottom: 10px;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        .history-table th, .history-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #f1f2f6;
-        }
-
-        .history-table th {
-            background-color: #f8f9fa;
-            font-weight: 700;
-            color: var(--text-main);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .history-summary {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #ecf0f1;
-            border-radius: 10px;
-        }
-
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        .history-table th, .history-table td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f2f6; }
+        .history-table th { background-color: #f8f9fa; font-weight: 700; color: var(--text-main); position: sticky; top: 0; z-index: 10; }
+        .history-summary { margin-bottom: 20px; padding: 15px; background: #ecf0f1; border-radius: 10px; }
         .history-summary p { margin: 5px 0; }
         .history-summary .score-correct { color: var(--success); font-weight: bold; }
         .history-summary .score-fail { color: var(--fail); font-weight: bold; }
-
         /* Full Screen Hint Button */
         .fs-hint {
             position: absolute;
@@ -268,13 +328,14 @@
             <div class="settings-box">
                 <div class="input-group">
                     <label>Name</label>
-                    <input type="text" id="inp-name" value="" placeholder="Enter your name">
+                    <input type="text" id="inp-name" value="Sivawaran" placeholder="Enter your name">
                 </div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="inp-email" value="" placeholder="student@example.com">
+                    <input type="email" id="inp-email" value="sivasothywaran@gmail.com" placeholder="student@example.com">
                 </div>
-                <div class="input-group">
+                
+                <div class="input-group" style="border-top: 1px solid #dfe6e9; margin-top: 15px; padding-top: 15px;">
                     <label>Difficulty</label>
                     <select id="inp-digits">
                         <option value="1">1 Digit</option>
@@ -291,9 +352,25 @@
                     <label>Speed (s)</label>
                     <input type="number" inputmode="decimal" id="inp-speed" value="1.5" step="0.1">
                 </div>
+
+                <div style="border-top: 1px solid #dfe6e9; margin-top: 15px; padding-top: 15px; text-align: left;">
+                    <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Sharing Settings:</p>
+                    <div class="teacher-input">
+                        <div class="input-group">
+                            <div class="icon-container icon-mail" title="Teacher Email Address">✉️</div>
+                            <input type="email" id="inp-teacher-email" value="" placeholder="Teacher Email Address">
+                        </div>
+                        <div class="input-group">
+                            <div class="icon-container icon-whatsapp" title="Teacher WhatsApp Number">💬</div>
+                            <input type="tel" id="inp-teacher-whatsapp" value="" placeholder="+919876543210 (WhatsApp)">
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <button class="action-btn" onclick="initGame()">START</button>
-            <button class="action-btn history-btn" onclick="showHistoryScreen()">View History</button> </div>
+            <button class="action-btn history-btn" onclick="showHistoryScreen()">View History</button>
+        </div>
 
         <div id="game-screen" class="hidden">
             <p id="status-text">Get Ready</p>
@@ -310,6 +387,13 @@
 
         <div id="result-screen" class="hidden">
             <div id="message"></div>
+            
+            <div id="share-link-container">
+                <a class="share-link" onclick="sendResults('email')">📧 Email Today's Report</a>
+                |
+                <a class="share-link whatsapp-color" onclick="sendResults('whatsapp')">💬 WhatsApp Today's Report</a>
+            </div>
+            
             <button class="action-btn primary-replay" onclick="replayGame()">Play Again</button>
             <button class="action-btn secondary" onclick="resetToSettings()">Change Settings</button>
         </div>
@@ -323,7 +407,7 @@
     </div>
 
     <script>
-        // --- ANDROID FULL SCREEN CHECK ---
+        // --- UTILITY FUNCTIONS ---
         const isAndroid = /Android/i.test(navigator.userAgent);
         if(isAndroid) document.getElementById('android-fs-btn').style.display = 'block';
 
@@ -333,6 +417,11 @@
             if(req) req.call(doc).catch(e => console.log(e));
         }
 
+        function getTodayDateString() {
+            // Returns YYYY-MM-DD for comparison purposes
+            return new Date().toISOString().slice(0, 10);
+        }
+
         // --- GLOBAL LOGIC ---
         let totalSum = 0;
         let countLimit = 0;
@@ -340,13 +429,14 @@
         let digitLimit = 1;
         let currentCount = 0;
         let gameInterval = null;
-        let playerName = "Student";
+        let playerName = "";
         let playerEmail = "";
+        let teacherEmail = "";
+        let teacherWhatsapp = "";
         
-        // Array to store all game attempts
         let resultsHistory = []; 
-
         const LOCAL_STORAGE_KEY = 'mathAppResults';
+        let lastResult = null;
 
         const els = {
             screens: {
@@ -354,11 +444,13 @@
                 game: document.getElementById('game-screen'),
                 answer: document.getElementById('answer-screen'),
                 result: document.getElementById('result-screen'),
-                history: document.getElementById('history-screen') // NEW
+                history: document.getElementById('history-screen') 
             },
             inputs: {
                 name: document.getElementById('inp-name'),
                 email: document.getElementById('inp-email'),
+                teacherEmail: document.getElementById('inp-teacher-email'),
+                teacherWhatsapp: document.getElementById('inp-teacher-whatsapp'),
                 digits: document.getElementById('inp-digits'),
                 count: document.getElementById('inp-count'),
                 speed: document.getElementById('inp-speed'),
@@ -369,7 +461,7 @@
                 status: document.getElementById('status-text'),
                 msg: document.getElementById('message'),
                 area: document.getElementById('display-area'),
-                historyContent: document.getElementById('history-content') // NEW
+                historyContent: document.getElementById('history-content')
             }
         };
 
@@ -378,10 +470,12 @@
         function loadResults() {
             try {
                 const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-                if (data) {
-                    resultsHistory = JSON.parse(data);
-                } else {
-                    resultsHistory = [];
+                resultsHistory = data ? JSON.parse(data) : [];
+                // Set default info from previous session (or use hardcoded defaults if empty)
+                if (resultsHistory.length > 0) {
+                    const lastStudent = resultsHistory[resultsHistory.length - 1];
+                    els.inputs.name.value = els.inputs.name.value || lastStudent.name || "";
+                    els.inputs.email.value = els.inputs.email.value || lastStudent.email || "";
                 }
             } catch (e) {
                 console.error("Could not load results from LocalStorage:", e);
@@ -397,7 +491,7 @@
             }
         }
         
-        // --- SCREEN CONTROL ---
+        // --- SCREEN CONTROL & GAME FLOW ---
 
         function switchScreen(name) {
             Object.values(els.screens).forEach(el => el.classList.add('hidden'));
@@ -405,15 +499,16 @@
         }
 
         function initGame() {
-            // Capture Settings
-            playerName = els.inputs.name.value.trim() || "Student";
+            // Capture Settings (including teacher contacts)
+            playerName = els.inputs.name.value.trim();
             playerEmail = els.inputs.email.value.trim();
+            teacherEmail = els.inputs.teacherEmail.value.trim();
+            teacherWhatsapp = els.inputs.teacherWhatsapp.value.trim();
             digitLimit = parseInt(els.inputs.digits.value);
             countLimit = parseInt(els.inputs.count.value);
             speedMs = parseFloat(els.inputs.speed.value) * 1000;
 
             if(playerName === "") return alert("Please enter your name.");
-            if(playerEmail === "") return alert("Please enter your email address.");
             if(isNaN(countLimit) || countLimit < 1) return alert("Check Count");
             if(isNaN(speedMs) || speedMs < 100) return alert("Check Speed");
 
@@ -438,7 +533,7 @@
 
         function startGameLoop() {
             if(digitLimit >= 4) els.disp.area.classList.add('text-tiny');
-            els.disp.status.innerText = `1 / ${countLimit}`;
+            els.disp.status.innerText = `${currentCount + 1} / ${countLimit}`;
             showNext();
 
             gameInterval = setInterval(() => {
@@ -478,18 +573,24 @@
             if(isNaN(userGuess)) return;
 
             // 1. CAPTURE & SAVE RESULT
-            resultsHistory.push({
+            const currentResult = {
                 name: playerName,
                 email: playerEmail,
-                difficulty: `${digitLimit} Digits (${countLimit} numbers)`,
+                difficulty: `${digitLimit} Digits`,
                 count: countLimit,
                 speed: parseFloat(els.inputs.speed.value),
                 userGuess: userGuess,
                 correctSum: totalSum,
                 isCorrect: isCorrect,
-                timestamp: new Date().toISOString(), // ISO format for easy sorting/parsing
-                displayTime: new Date().toLocaleString()
-            });
+                timestamp: new Date().toISOString(),
+                displayTime: new Date().toLocaleTimeString(), 
+                success: isCorrect ? 1 : 0,
+                failure: isCorrect ? 0 : 1
+            };
+            
+            // Update lastResult and History
+            lastResult = currentResult;
+            resultsHistory.push(currentResult);
             saveResults();
 
             // 2. Display Message
@@ -510,6 +611,66 @@
             switchScreen('settings');
         }
 
+        // --- SEND DAILY RESULTS FUNCTION ---
+        function sendResults(type) {
+            // Get today's games for the current student
+            const todayDate = getTodayDateString();
+            const todayResults = resultsHistory.filter(r => 
+                r.timestamp.startsWith(todayDate) && r.name === playerName
+            );
+
+            if (todayResults.length === 0) {
+                alert("No games recorded for today by this student.");
+                return;
+            }
+
+            // --- 1. GENERATE SUMMARY METRICS ---
+            const totalGames = todayResults.length;
+            const totalCorrect = todayResults.filter(r => r.isCorrect).length;
+            const totalFailed = totalGames - totalCorrect;
+            const formattedDate = new Date().toLocaleDateString();
+
+            // --- 2. GENERATE DETAILED REPORT BODY ---
+            let details = "Attempt Details:\n";
+            todayResults.forEach((r, index) => {
+                const status = r.isCorrect ? "✅" : "❌";
+                const timeOnly = new Date(r.timestamp).toLocaleTimeString(); 
+                details += `${index + 1}. ${status} (${timeOnly}) | Diff: ${r.difficulty} (${r.count}) | Guess: ${r.userGuess} | Correct: ${r.correctSum}\n`;
+            });
+
+
+            const messageBody = `
+Memory Maths Daily Report
+Student: ${playerName}
+Date: ${formattedDate}
+--------------------------
+Total Games Played: ${totalGames}
+Total Correct: ${totalCorrect}
+Total Failures: ${totalFailed}
+--------------------------
+${details}
+            `.trim();
+            
+            const subject = `Daily Maths Report - ${playerName} (${formattedDate})`;
+
+            // --- 3. SEND VIA EMAIL OR WHATSAPP ---
+            if (type === 'email') {
+                if (!teacherEmail) {
+                    alert("Please set the Teacher's Email in the sharing settings first.");
+                    return;
+                }
+                const mailtoLink = `mailto:${teacherEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(messageBody)}`;
+                window.open(mailtoLink, '_blank');
+            } else if (type === 'whatsapp') {
+                if (!teacherWhatsapp) {
+                    alert("Please set the Teacher's WhatsApp number in the sharing settings first.");
+                    return;
+                }
+                const whatsappLink = `whatsapp://send?phone=${teacherWhatsapp.replace(/[^\d+]/g, '')}&text=${encodeURIComponent(messageBody)}`;
+                window.open(whatsappLink);
+            }
+        }
+
         // --- HISTORY DISPLAY FUNCTION ---
 
         function showHistoryScreen() {
@@ -519,9 +680,8 @@
                 return;
             }
 
-            // Group data by student name (and maybe email)
             const groupedHistory = resultsHistory.reduce((acc, entry) => {
-                const key = `${entry.name} (${entry.email})`;
+                const key = `${entry.name} (${entry.email || 'No Email'})`;
                 if (!acc[key]) {
                     acc[key] = {
                         totalCorrect: 0,
@@ -532,16 +692,11 @@
                     };
                 }
                 
-                // Track total scores
                 acc[key].totalGames++;
-                if (entry.isCorrect) {
-                    acc[key].totalCorrect++;
-                } else {
-                    acc[key].totalIncorrect++;
-                }
+                acc[key].totalCorrect += entry.success;
+                acc[key].totalIncorrect += entry.failure;
                 
-                // Track scores per difficulty
-                const diffKey = entry.difficulty;
+                const diffKey = `${entry.difficulty} (${entry.count} at ${entry.speed}s)`;
                 if (!acc[key].difficultyScores[diffKey]) {
                     acc[key].difficultyScores[diffKey] = { correct: 0, total: 0 };
                 }
@@ -564,8 +719,8 @@
                     <h3>${studentKey}'s Summary</h3>
                     <div class="history-summary">
                         <p>Total Games Played: <b>${data.totalGames}</b></p>
-                        <p>Total Correct Answers: <span class="score-correct">${data.totalCorrect}</span></p>
-                        <p>Total Failed Answers: <span class="score-fail">${data.totalIncorrect}</span></p>
+                        <p>Total Correct: <span class="score-correct">${data.totalCorrect}</span></p>
+                        <p>Total Failures: <span class="score-fail">${data.totalIncorrect}</span></p>
                         
                         <p style="margin-top: 10px; font-weight: 600;">Breakdown by Difficulty:</p>
                         <ul style="list-style-type: none; padding: 0;">
@@ -595,13 +750,14 @@
                         <tbody>
                 `;
                 
-                // Display attempts (newest first)
                 data.attempts.slice().reverse().forEach(entry => {
                     const status = entry.isCorrect ? `<span style="color:var(--success);">✅ YES</span>` : `<span style="color:var(--fail);">❌ NO</span>`;
+                    const fullDateTime = new Date(entry.timestamp).toLocaleString();
+                    
                     html += `
                         <tr>
-                            <td>${entry.displayTime}</td>
-                            <td>${entry.difficulty.split('(')[0]}</td>
+                            <td>${fullDateTime}</td>
+                            <td>${entry.difficulty}</td>
                             <td>${status}</td>
                             <td>${entry.correctSum}</td>
                             <td>${entry.userGuess}</td>
